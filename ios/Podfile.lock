@@ -1,0 +1,29 @@
+PODS:
+  - Braintree (5.27.0):
+    - Braintree/Card (= 5.27.0)
+    - Braintree/Core (= 5.27.0)
+    - Braintree/PayPal (= 5.27.0)
+  - Braintree/Card (5.27.0):
+    - Braintree/Core
+  - Braintree/Core (5.27.0)
+  - Braintree/DataCollector (5.27.0):
+    - Braintree/Core
+  - Braintree/PayPal (5.27.0):
+    - Braintree/Core
+    - Braintree/PayPalDataCollector
+  - Braintree/PayPalDataCollector (5.27.0)
+
+DEPENDENCIES:
+  - Braintree (~> 5.27.0)
+  - Braintree/DataCollector
+
+SPEC REPOS:
+  trunk:
+    - Braintree
+
+SPEC CHECKSUMS:
+  Braintree: 9e88d36e660d95a89f920cec2351392d647c3fe5
+
+PODFILE CHECKSUM: 285a8e330ac9503f555234a201a0da5a1623c278
+
+COCOAPODS: 1.16.2

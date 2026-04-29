@@ -42,7 +42,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() {
         _cmidStatus = "Success! CMID: \n\n$result";
       });
-      print("Send this ID to your backend: $result");
+      debugPrint("Send this ID to your backend: $result");
     } on PlatformException catch (e) {
       setState(() {
         _cmidStatus = "Error: '${e.message}'.";
