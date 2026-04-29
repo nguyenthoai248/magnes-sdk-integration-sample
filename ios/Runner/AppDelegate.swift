@@ -1,6 +1,6 @@
 import UIKit
 import Flutter
-import Braintree
+import PPRiskMagnes
  
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -11,43 +11,56 @@ import Braintree
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
 
-    // Register the channel using the registrar for better reliability
-    let registrar = self.registrar(forPlugin: "MagnesPlugin")
-    if let messenger = registrar?.messenger() {
-        print("Magnes: Registering method channel via registrar")
-        self.magnesChannel = FlutterMethodChannel(name: "com.paypal.demo/magnes",
-                                                  binaryMessenger: messenger)
-        self.magnesChannel?.setMethodCallHandler({
-          [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-          print("Magnes: Received method call: \(call.method)")
-          if call.method == "getClientMetadataId" {
-              self?.getMagnesData(flutterResult: result)
-          } else {
-              result(FlutterMethodNotImplemented)
-          }
-        })
-    } else {
-        print("Magnes: Failed to get messenger from registrar")
-    }
+    let applicationResult = super.application(application, didFinishLaunchingWithOptions: launchOptions)
 
     GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    setupMagnesSDK()
+    registerMagnesChannel()
+
+    return applicationResult
+  }
+
+  private func registerMagnesChannel() {
+    guard let controller = window?.rootViewController as? FlutterViewController else {
+      print("Magnes: Failed to get FlutterViewController in AppDelegate")
+      return
+    }
+
+    print("Magnes: Registering method channel in AppDelegate")
+    self.magnesChannel = FlutterMethodChannel(name: "com.paypal.demo/magnes",
+                                              binaryMessenger: controller.binaryMessenger)
+    self.magnesChannel?.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+      print("Magnes: Received method call: \(call.method)")
+      if call.method == "getClientMetadataId" {
+        self?.getMagnesData(flutterResult: result)
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    })
+  }
+
+  private func setupMagnesSDK() {
+      do {
+          try MagnesSDK.shared().setUp(
+              setEnviroment: .SANDBOX,
+              setOptionalAppGuid: "",
+              setOptionalAPNToken: "",
+              disableRemoteConfiguration: false,
+              disableBeacon: false,
+              magnesSource: .DEFAULT)
+          print("Magnes: SDK initialized")
+      } catch {
+          print("Magnes: SDK setup failed: \(error)")
+      }
   }
 
   private func getMagnesData(flutterResult: @escaping FlutterResult) {
       print("Magnes: Collecting data...")
-      // Initialize an API Client using your Tokenization Key or Client Token
-      guard let apiClient = BTAPIClient(authorization: "sandbox_7xtbb6zw_dkvdjkwcddjxkmb9") else {
-          print("Magnes: Error - Invalid token")
-          flutterResult(FlutterError(code: "INVALID_TOKEN", message: "Invalid Braintree tokenization key", details: nil))
-          return
-      }
-      let dataCollector = BTDataCollector(apiClient: apiClient)
-      // Collect device data
-      dataCollector.collectDeviceData { deviceData in
-          print("Magnes: Data collected successfully")
-          // Returns a stringified JSON containing the correlation_id
-          flutterResult(deviceData)
-      }
+      let magnes = MagnesSDK.shared()
+      let magnesResult = magnes.collectAndSubmit()
+      let cmid = magnesResult.getPayPalClientMetaDataId()
+      print("Magnes: Data collected successfully")
+      flutterResult(cmid)
   }
 }
