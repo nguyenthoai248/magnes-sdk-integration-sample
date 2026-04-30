@@ -1,17 +1,12 @@
-# magnes_sdk_integration_sample
+Magnes SDK Integration Sample
 
-A new Flutter project.
+Simple Flutter sample showing how to integrate PayPal Magnes SDK (device fingerprinting / antifraud) on Android and iOS.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Features
+Collect device data via Magnes SDK
+Call native code using MethodChannel
+Supports Android & iOS
+Notes
+Magnes SDK is private (request access from PayPal)
+SDK is not included in this repo
+For demo purposes only
